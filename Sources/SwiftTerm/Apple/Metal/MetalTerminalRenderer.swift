@@ -2768,10 +2768,11 @@ final class MetalTerminalRenderer: NSObject, MTKViewDelegate {
     }
 
     private static func candidateBundles() -> [Bundle] {
+        // No Bundle.module here: this target declares no resources (the
+        // shader is excluded from the build entirely, see Package.swift),
+        // so that accessor isn't synthesized. The precompiled metallib was
+        // never going to be found this way anyway since it's never built.
         var bundles: [Bundle] = []
-        #if SWIFT_PACKAGE
-        bundles.append(Bundle.module)
-        #endif
         bundles.append(Bundle(for: MetalTerminalRenderer.self))
         bundles.append(Bundle.main)
         return bundles

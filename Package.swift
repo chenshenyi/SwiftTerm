@@ -79,17 +79,16 @@ let targets: [Target] = [
 //            .product(name: "Subprocess", package: "swift-subprocess", condition: .when(platforms: [.macOS, .linux]))
 //        ],
         path: "Sources/SwiftTerm",
-        exclude: platformExcludes + ["Mac/README.md"],
-        // Shaders.metal is `.copy`-ed (not `.process`-ed) so the raw source
-        // sits in the resource bundle uncompiled — this avoids invoking the
-        // Metal shader compiler, so building doesn't require Xcode's
-        // separate Metal Toolchain component. useMetalRenderer defaults to
-        // false and falls back to CoreGraphics rendering if the Metal
-        // renderer can't be constructed, so this is safe as long as nothing
-        // explicitly turns Metal rendering on.
-        resources: [
-            .copy("Apple/Metal/Shaders.metal")
-        ]
+        // Shaders.metal is fully excluded — not compiled, not copied as a
+        // resource, not part of the target's file set at all — so neither
+        // SwiftPM nor Xcode's build system ever looks at it, and building
+        // doesn't require Xcode's separate Metal Toolchain component.
+        // useMetalRenderer defaults to false and falls back to CoreGraphics
+        // rendering if the Metal renderer can't be constructed (see the
+        // Bundle.module removal in MetalTerminalRenderer.candidateBundles),
+        // so this is safe as long as nothing explicitly turns Metal
+        // rendering on.
+        exclude: platformExcludes + ["Mac/README.md", "Apple/Metal/Shaders.metal"]
 //        swiftSettings: [
 //            .unsafeFlags(["-enforce-exclusivity=none"])
 //        ]
