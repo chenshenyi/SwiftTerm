@@ -79,16 +79,13 @@ let targets: [Target] = [
 //            .product(name: "Subprocess", package: "swift-subprocess", condition: .when(platforms: [.macOS, .linux]))
 //        ],
         path: "Sources/SwiftTerm",
-        // Shaders.metal is fully excluded — not compiled, not copied as a
-        // resource, not part of the target's file set at all — so neither
-        // SwiftPM nor Xcode's build system ever looks at it, and building
-        // doesn't require Xcode's separate Metal Toolchain component.
-        // useMetalRenderer defaults to false and falls back to CoreGraphics
-        // rendering if the Metal renderer can't be constructed (see the
-        // Bundle.module removal in MetalTerminalRenderer.candidateBundles),
-        // so this is safe as long as nothing explicitly turns Metal
-        // rendering on.
-        exclude: platformExcludes + ["Mac/README.md", "Apple/Metal/Shaders.metal"]
+        // The Metal GPU renderer (Apple/Metal/*, including Shaders.metal)
+        // has been removed entirely — see this fork's commit history. It
+        // was optional and off by default (CoreGraphics rendering only),
+        // and Xcode's build system otherwise demands its separate Metal
+        // Toolchain component just to compile the shader, whether or not
+        // anything ever turns Metal rendering on.
+        exclude: platformExcludes + ["Mac/README.md"]
 //        swiftSettings: [
 //            .unsafeFlags(["-enforce-exclusivity=none"])
 //        ]

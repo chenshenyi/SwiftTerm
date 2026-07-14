@@ -9,7 +9,7 @@
 import Foundation
 import CoreGraphics
 import CoreText
-#if canImport(MetalKit)
+#if false // Metal support removed
 import MetalKit
 #endif
 #if canImport(ImageIO)
@@ -461,7 +461,7 @@ extension TerminalView {
                 caretTextColor = caretView.defaultCaretTextColor
             }
         }
-#if canImport(MetalKit) && os(macOS)
+#if false // Metal support removed && os(macOS)
         queueMetalDisplay()
 #endif
     }
@@ -1755,7 +1755,7 @@ extension TerminalView {
             // time, and MTKView is paused — without an explicit redraw the
             // cursor stays at its old screen position until something else
             // dirties a row. Trigger a redraw if the cursor moved.
-            #if canImport(MetalKit)
+            #if false // Metal support removed
             if metalView != nil {
                 let buffer = terminal.displayBuffer
                 let cursor = (x: buffer.x, y: buffer.yBase + buffer.y, hidden: terminal.cursorHidden)
@@ -1795,7 +1795,7 @@ extension TerminalView {
             let newY = max (0, region.origin.y - extra)
             region = CGRect (x: 0, y: newY, width: frame.width, height: region.maxY - newY)
         }
-#if canImport(MetalKit)
+#if false // Metal support removed
         if metalView != nil {
             let buffer = terminal.displayBuffer
             if buffer.lines.count == 0 {
@@ -1833,7 +1833,7 @@ extension TerminalView {
         #else
         // TODO iOS: need to update the code above, but will do that when I get some real
         // life data being fed into it.
-        #if canImport(MetalKit)
+        #if false // Metal support removed
         if metalView != nil {
             metalDirtyRange = metalVisibleRange()
             let buffer = terminal.displayBuffer
@@ -1927,7 +1927,7 @@ extension TerminalView {
         }
     }
 
-#if canImport(MetalKit)
+#if false // Metal support removed
     func requestMetalDisplay() {
         guard let metalView = metalView else {
             return

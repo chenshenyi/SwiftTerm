@@ -14,7 +14,7 @@ import AppKit
 import CoreText
 import CoreGraphics
 import Carbon.HIToolbox
-#if canImport(MetalKit)
+#if false // Metal support removed
 import MetalKit
 #endif
 #if canImport(os)
@@ -42,7 +42,7 @@ import os.log
  * defaults, otherwise, this uses its own set of defaults colors.
  */
 open class TerminalView: NSView, NSTextInputClient, NSUserInterfaceValidations, TerminalDelegate {
-#if canImport(MetalKit)
+#if false // Metal support removed
     // Default to throttling Metal redraws during live-resize; set SWIFTTERM_METAL_LIVE_RESIZE_THROTTLE=0 to disable.
     private static let metalLiveResizeThrottleEnabled: Bool = {
         let value = ProcessInfo.processInfo.environment["SWIFTTERM_METAL_LIVE_RESIZE_THROTTLE"]
@@ -211,7 +211,7 @@ open class TerminalView: NSView, NSTextInputClient, NSUserInterfaceValidations, 
     /// read from the (possibly background) feed thread.
     let userInputLock = NSLock()
     let interactiveInputDisplayWindowNs: UInt64 = 150_000_000
-#if canImport(MetalKit)
+#if false // Metal support removed
     var metalView: MTKView?
     var metalRenderer: MetalTerminalRenderer?
     /// Experimental GPU path: CoreText glyph atlas + Metal quads.
@@ -354,7 +354,7 @@ open class TerminalView: NSView, NSTextInputClient, NSUserInterfaceValidations, 
         setupFocusNotification()
     }
 
-#if canImport(MetalKit)
+#if false // Metal support removed
     /// Enables or disables GPU-accelerated rendering via Metal.
     ///
     /// When enabled, the terminal view replaces its CoreGraphics rendering
@@ -550,7 +550,7 @@ open class TerminalView: NSView, NSTextInputClient, NSUserInterfaceValidations, 
     open override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
         startWindowMouseMovedFallback()
-#if canImport(MetalKit)
+#if false // Metal support removed
         guard useMetalRenderer, let currentWindow = window else { return }
         if currentWindow !== metalBoundWindow {
             rebindMetalRendererToWindow(currentWindow)
@@ -942,7 +942,7 @@ open class TerminalView: NSView, NSTextInputClient, NSUserInterfaceValidations, 
     }
     
     override public func draw (_ dirtyRect: NSRect) {
-#if canImport(MetalKit)
+#if false // Metal support removed
         if metalView != nil {
             return
         }
@@ -969,7 +969,7 @@ open class TerminalView: NSView, NSTextInputClient, NSUserInterfaceValidations, 
         updateProgressBarFrame()
         guard cellDimension != nil else { return }
         _ = processSizeChange(newSize: frame.size)
-#if canImport(MetalKit)
+#if false // Metal support removed
         if useMetalRenderer {
             if inLiveResize && TerminalView.metalLiveResizeThrottleEnabled {
                 queueMetalDisplay()
@@ -2312,7 +2312,7 @@ open class TerminalView: NSView, NSTextInputClient, NSUserInterfaceValidations, 
     }
     
     open func selectionChanged(source: Terminal) {
-        #if canImport(MetalKit)
+        #if false // Metal support removed
         if metalView != nil {
             let buffer = terminal.displayBuffer
             if buffer.lines.count == 0 {
@@ -2797,29 +2797,18 @@ open class TerminalView: NSView, NSTextInputClient, NSUserInterfaceValidations, 
     }
     
     open func showCursor(source: Terminal) {
-        if useMetalRenderer {
-            queueMetalDisplay()
-            return
-        }
         if caretView.superview == nil {
             addSubview(caretView)
         }
     }
 
     open func hideCursor(source: Terminal) {
-        if useMetalRenderer {
-            queueMetalDisplay()
-            return
-        }
         caretView.removeFromSuperview()
     }
     
     open func cursorStyleChanged (source: Terminal, newStyle: CursorStyle) {
         caretView.style = newStyle
         updateCaretView()
-        if useMetalRenderer {
-            queueMetalDisplay()
-        }
     }
 
     open func bell(source: Terminal) {
