@@ -80,8 +80,15 @@ let targets: [Target] = [
 //        ],
         path: "Sources/SwiftTerm",
         exclude: platformExcludes + ["Mac/README.md"],
+        // Shaders.metal is `.copy`-ed (not `.process`-ed) so the raw source
+        // sits in the resource bundle uncompiled — this avoids invoking the
+        // Metal shader compiler, so building doesn't require Xcode's
+        // separate Metal Toolchain component. useMetalRenderer defaults to
+        // false and falls back to CoreGraphics rendering if the Metal
+        // renderer can't be constructed, so this is safe as long as nothing
+        // explicitly turns Metal rendering on.
         resources: [
-            .process("Apple/Metal/Shaders.metal")
+            .copy("Apple/Metal/Shaders.metal")
         ]
 //        swiftSettings: [
 //            .unsafeFlags(["-enforce-exclusivity=none"])
